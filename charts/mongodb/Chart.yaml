@@ -9,5 +9,5 @@ home: https://www.mongodb.com
 sources:
 - https://github.com/zmargeta/helm-charts
 maintainers:
-- name: Željko Margeta
+- name: zmargeta
   email: zeljko.margeta@gmail.com
