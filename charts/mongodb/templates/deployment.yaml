@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mongodb.fullName" . }}-deployment
+  labels:
+    {{- include "mongodb.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "mongodb.selectorLabels" . | nindent 6 }}
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "mongodb.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "mongodb.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        args: [ "--dbpath", "{{ .Values.persistence.mountPath }}" ]
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- with .Values.securityContext }}
+        securityContext:
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+        ports:
+        - name: {{ .Chart.Name }}-port
+          containerPort: 27017
+        livenessProbe:
+          exec:
+            command:
+            - mongosh
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 6
+        readinessProbe:
+          exec:
+            command:
+            - mongosh
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 6
+        {{- with .Values.resources }}
+        resources:
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: {{ .Values.auth.rootUser }}
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "mongodb.secretName" . }}
+              key: mongodb-root-password
+        volumeMounts:
+        - mountPath: {{ .Values.persistence.mountPath }}
+          name: data-vol
+      volumes:
+      {{- if not .Values.persistence.enabled }}
+      - name: data-vol
+        emptyDir: { }
+      {{- else if .Values.persistence.claimName }}
+      - name: data-vol
+        persistentVolumeClaim:
+          claimName: {{ printf "%s" (tpl .Values.persistence.claimName .) }}
+      {{- else }}
+      - name: data-vol
+        persistentVolumeClaim:
+          claimName: {{ include "mongodb.fullName" . }}-pvc
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
