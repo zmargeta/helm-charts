@@ -2,8 +2,8 @@ apiVersion: v2
 name: mongodb
 description: MongoDB is a relational open source NoSQL database.
 type: application
-version: "0.1.0"
-appVersion: "6.0.4-jammy"
+version: 0.2.0
+appVersion: 6.0.4-jammy
 kubeVersion: ">= 1.24.3"
 home: https://www.mongodb.com
 sources:

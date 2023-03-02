@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "mongodb.fullName" . }}-deployment
+  name: {{ include "mongodb.fullName" . }}
   labels:
     {{- include "mongodb.labels" . | nindent 4 }}
 spec:
