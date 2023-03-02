@@ -3,6 +3,23 @@ entries:
   mongodb:
   - apiVersion: v2
     appVersion: 6.0.4-jammy
+    created: "2023-03-02T20:28:34.71914802Z"
+    description: MongoDB is a relational open source NoSQL database.
+    digest: 358eeb6f69842373a650b02145d9218c2f0e0b54d80c7b399c67026c0835e99f
+    home: https://www.mongodb.com
+    kubeVersion: '>= 1.24.3'
+    maintainers:
+    - email: zeljko.margeta@gmail.com
+      name: zmargeta
+    name: mongodb
+    sources:
+    - https://github.com/zmargeta/helm-charts
+    type: application
+    urls:
+    - https://github.com/zmargeta/helm-charts/releases/download/mongodb-0.2.0/mongodb-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 6.0.4-jammy
     created: "2023-02-21T23:14:57.055775774Z"
     description: MongoDB is a relational open source NoSQL database.
     digest: 537c9c08b0d18660a5e9ae0895633baa244694058125a30da4728558dd6f9b80
@@ -18,4 +35,4 @@ entries:
     urls:
     - https://github.com/zmargeta/helm-charts/releases/download/mongodb-0.1.0/mongodb-0.1.0.tgz
     version: 0.1.0
-generated: "2023-02-21T23:14:57.055788474Z"
+generated: "2023-03-02T20:28:34.71915982Z"
