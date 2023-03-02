@@ -89,7 +89,7 @@ spec:
       {{- else }}
       - name: data-vol
         persistentVolumeClaim:
-          claimName: {{ include "mongodb.fullName" . }}-pvc
+          claimName: {{ include "mongodb.fullName" . }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
