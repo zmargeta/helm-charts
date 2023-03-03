@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "mongodb.name" -}}
+{{- define "mongodb.name" }}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "mongodb.fullName" -}}
+{{- define "mongodb.fullName" }}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,14 +26,14 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "mongodb.chart" -}}
+{{- define "mongodb.chart" }}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "mongodb.labels" -}}
+{{- define "mongodb.labels" }}
 helm.sh/chart: {{ include "mongodb.chart" . }}
 {{ include "mongodb.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
@@ -45,7 +45,7 @@ app.kubernetes.io/managed-by: {{ lower .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "mongodb.selectorLabels" -}}
+{{- define "mongodb.selectorLabels" }}
 app.kubernetes.io/name: {{ include "mongodb.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/component: database
@@ -54,7 +54,7 @@ app.kubernetes.io/component: database
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "mongodb.serviceAccountName" -}}
+{{- define "mongodb.serviceAccountName" }}
 {{- if .Values.serviceAccount.create }}
 {{- default (include "mongodb.fullName" .) .Values.serviceAccount.name }}
 {{- else }}
@@ -65,10 +65,24 @@ Create the name of the service account to use
 {{/*
 Create the name of the secret containing credentials
 */}}
-{{- define "mongodb.secretName" -}}
+{{- define "mongodb.secretName" }}
 {{- if .Values.auth.secretName }}
 {{- printf "%s" (tpl .Values.auth.secretName $) }}
 {{- else }}
 {{- printf "%s" (include "mongodb.fullName" .) }}
 {{- end }}
+{{- end }}
+
+{{/*
+Create the key of the value containing root user secret
+*/}}
+{{- define "mongodb.secretKeyUser" }}
+{{- default "mongodb-root-user" (tpl .Values.auth.secretKeyUser $) }}
+{{- end }}
+
+{{/*
+Create the key of the value containing root password secret
+*/}}
+{{- define "mongodb.secretKeyPassword" }}
+{{- default "mongodb-root-password" (tpl .Values.auth.secretKeyPassword $) }}
 {{- end }}

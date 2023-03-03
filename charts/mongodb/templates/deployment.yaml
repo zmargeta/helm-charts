@@ -68,26 +68,29 @@ spec:
             {{- toYaml . | nindent 12 }}
         {{- end }}
         env:
-        - name: MONGO_INITDB_ROOT_USERNAME
-          value: {{ .Values.auth.rootUser }}
-        - name: MONGO_INITDB_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ include "mongodb.secretName" . }}
-              key: mongodb-root-password
+        - name: MONGO_INITDB_ROOT_USERNAME_FILE
+          value: /run/secrets/{{ include "mongodb.secretName" . }}/{{ include "mongodb.secretKeyUser" . }}
+        - name: MONGO_INITDB_ROOT_PASSWORD_FILE
+          value: /run/secrets/{{ include "mongodb.secretName" . }}/{{ include "mongodb.secretKeyPassword" . }}
         volumeMounts:
-        - mountPath: {{ .Values.persistence.mountPath }}
-          name: data-vol
+        - name: secret-volume
+          mountPath: /run/secrets/{{ include "mongodb.secretName" . }}
+          readOnly: true
+        - name: data-volume
+          mountPath: {{ .Values.persistence.mountPath }}
       volumes:
+      - name: secret-volume
+        secret:
+          secretName: {{ include "mongodb.secretName" . }}
       {{- if not .Values.persistence.enabled }}
-      - name: data-vol
+      - name: data-volume
         emptyDir: { }
       {{- else if .Values.persistence.claimName }}
-      - name: data-vol
+      - name: data-volume
         persistentVolumeClaim:
           claimName: {{ printf "%s" (tpl .Values.persistence.claimName .) }}
       {{- else }}
-      - name: data-vol
+      - name: data-volume
         persistentVolumeClaim:
           claimName: {{ include "mongodb.fullName" . }}
       {{- end }}

@@ -29,9 +29,14 @@ auth:
   rootUser: root
   rootPassword: root
   # The name of an existing secret to use
-  # If not set a secret is created containing the rootPassword, otherwise the existing secret used instead
-  # Password value is expected to be under the "mongodb-root-password" key
+  # If not set a secret is created containing the credentials, otherwise the existing secret used instead
   secretName: ""
+  # The key for the rootUser secret value
+  # If not set it defaults to mongodb-root-user
+  secretKeyUser: ""
+  # The key for the rootPassword secret value
+  # If not set it defaults to mongodb-root-password
+  secretKeyPassword: ""
 service:
   type: ClusterIP
   port: 27017
